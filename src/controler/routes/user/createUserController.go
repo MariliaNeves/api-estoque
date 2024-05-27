@@ -6,9 +6,13 @@ import (
 	"github.com/MariliaNeves/api-estoque/src/configuration/logger"
 	"github.com/MariliaNeves/api-estoque/src/configuration/validation"
 	"github.com/MariliaNeves/api-estoque/src/controler/model/request"
-	"github.com/MariliaNeves/api-estoque/src/controler/model/response"
+	model "github.com/MariliaNeves/api-estoque/src/model/user"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+)
+
+var (
+	UserDomainInterface model.UserDomainInterface
 )
 
 func CreateUser(c *gin.Context) {
@@ -24,15 +28,19 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	response := response.UserResponse{
-		ID:    "test",
-		Email: userRequest.Email,
-		Name:  userRequest.Name,
-		Age:   userRequest.Age,
+	domain := model.NewUserDomain(
+		userRequest.Email,
+		userRequest.Password,
+		userRequest.Name,
+		userRequest.Age,
+	)
+	if err := domain.CreateUser(); err != nil {
+		c.JSON(err.Code, err)
+		return
 	}
 
 	logger.Info("User create successfully",
 		zap.String("journey", "createUser"),
 	)
-	c.JSON(http.StatusOK, response)
+	c.String(http.StatusOK, "")
 }
