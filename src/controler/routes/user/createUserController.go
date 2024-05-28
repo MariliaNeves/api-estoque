@@ -6,7 +6,8 @@ import (
 	"github.com/MariliaNeves/api-estoque/src/configuration/logger"
 	"github.com/MariliaNeves/api-estoque/src/configuration/validation"
 	"github.com/MariliaNeves/api-estoque/src/controler/model/request"
-	model "github.com/MariliaNeves/api-estoque/src/model/user"
+	"github.com/MariliaNeves/api-estoque/src/model"
+	"github.com/MariliaNeves/api-estoque/src/model/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -34,7 +35,9 @@ func CreateUser(c *gin.Context) {
 		userRequest.Name,
 		userRequest.Age,
 	)
-	if err := domain.CreateUser(); err != nil {
+
+	service := service.NewUserDomainService()
+	if err := service.CreateUser(domain); err != nil {
 		c.JSON(err.Code, err)
 		return
 	}
