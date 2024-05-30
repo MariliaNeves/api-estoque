@@ -1,13 +1,13 @@
-package controler
+package controller
 
 import (
 	"net/http"
 
 	"github.com/MariliaNeves/api-estoque/src/configuration/logger"
 	"github.com/MariliaNeves/api-estoque/src/configuration/validation"
-	"github.com/MariliaNeves/api-estoque/src/controler/model/request"
+	"github.com/MariliaNeves/api-estoque/src/controller/model/request"
 	"github.com/MariliaNeves/api-estoque/src/model"
-	"github.com/MariliaNeves/api-estoque/src/model/service"
+	"github.com/MariliaNeves/api-estoque/src/view"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -16,7 +16,7 @@ var (
 	UserDomainInterface model.UserDomainInterface
 )
 
-func CreateUser(c *gin.Context) {
+func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 	logger.Info("Init CreateUser controller")
 	var userRequest request.UserRequest
 
@@ -36,8 +36,7 @@ func CreateUser(c *gin.Context) {
 		userRequest.Age,
 	)
 
-	service := service.NewUserDomainService()
-	if err := service.CreateUser(domain); err != nil {
+	if err := uc.service.CreateUser(domain); err != nil {
 		c.JSON(err.Code, err)
 		return
 	}
@@ -45,5 +44,7 @@ func CreateUser(c *gin.Context) {
 	logger.Info("User create successfully",
 		zap.String("journey", "createUser"),
 	)
-	c.String(http.StatusOK, "")
+	c.JSON(http.StatusOK, view.ConvertDomainToResponse(
+		domain,
+	))
 }

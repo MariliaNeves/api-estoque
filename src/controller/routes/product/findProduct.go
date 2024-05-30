@@ -1,4 +1,4 @@
-package controler
+package product
 
 import (
 	"github.com/MariliaNeves/api-estoque/src/configuration/rest_err"
